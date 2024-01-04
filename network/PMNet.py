@@ -195,7 +195,7 @@ class PMNet(nn.Module):
         x6 = self.layer5(x5)
         x7 = self.aspp(x6)
         x8 = self.fc1(x7)
-
+        
         # Decoder
         xup5 = self.conv_up5(x8)
         xup5 = torch.cat([xup5, x5], dim=1)

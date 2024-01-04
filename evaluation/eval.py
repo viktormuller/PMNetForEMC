@@ -44,11 +44,11 @@ def building_segments(input,pred,target):
 It computes the rmse in the ROI region alone and avoids checking the
 building segmentation loss as well that is unrelated to the problem statement.
 '''
-def roi_rmse_loss(input,pred,target):
+def roi_rmse_loss(output,target):
   build_count = 0
-  input = input[:,0,:,:].unsqueeze(1)
+  input = target[:,1,:,:].unsqueeze(1)
   #print("Input dimension ",input.shape)
-  error_tensor = torch.where(input==0,(pred-target)**2,0)
+  error_tensor = torch.where(input==0,(output-target)**2,0)
   sum_torch = error_tensor.sum()
   #print("Sum torch ",sum_torch)
   count_non_zero = error_tensor.count_nonzero()
@@ -60,3 +60,10 @@ def roi_rmse_loss(input,pred,target):
   #print("count_non_zero:",count_non_zero)
   #print("Error float per batch ",error_float)
   return error_float
+
+class ROI_RMSE_Loss(nn.Module):
+  def __init__(self):
+    super(ROI_RMSE_Loss, self).__init__()
+  
+  def forward(self, output, target):
+    return roi_rmse_loss(output, target)

@@ -36,9 +36,9 @@ class PMnet_usc(Dataset):
         image_Tx = np.asarray(io.imread(img_name_Tx))
 
         #Load Rx (reciever): (not used in our training)
-        self.dir_Rx = self.dir_dataset+ "/Rx/" 
-        img_name_Rx = os.path.join(self.dir_Rx, str((self.ind_val.iloc[idx, 0]))) + ".png"
-        image_Rx = np.asarray(io.imread(img_name_Rx))
+        #self.dir_Rx = self.dir_dataset+ "/Rx/" 
+        #img_name_Rx = os.path.join(self.dir_Rx, str((self.ind_val.iloc[idx, 0]))) + ".png"
+        #image_Rx = np.asarray(io.imread(img_name_Rx))
 
         #Load Power:
         self.dir_power = self.dir_dataset+ "/pmap/" 

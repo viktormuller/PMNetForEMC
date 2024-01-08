@@ -70,7 +70,7 @@ def train(args):
     scheduler = optim.lr_scheduler.StepLR(optimizer=optimizer,step_size=10, gamma=0.5, verbose=True)
     loss_fn = ROI_RMSE_Loss()
     
-    for epoch in range(1,2):        
+    for epoch in range(1,args.epochs):        
         network.train()
         for batch_idx, (data, target) in enumerate(usc_training_dataloader):
             data, target = data.to(device), target.to(device)
@@ -82,15 +82,16 @@ def train(args):
             loss.backward()
             optimizer.step()
             idx = batch_idx +1
-            if (idx) % args.log_interval == 0:
+            if idx % args.log_interval == 0:
                 print(
                     "Train Epoch: {} [{}/{} ({:.0f}%)] Loss: {:.6f}".format(
                         epoch,
                         (idx) * len(data),
                         len(usc_training_dataloader.sampler),
                         100.0 * idx / len(usc_training_dataloader),
-                        loss.item(),
-                    )
+                        loss.item()                        
+                    ),
+                    flush=True
                 )
         test(network, usc_test_dataloader, device)
         scheduler.step()
@@ -144,7 +145,7 @@ if __name__ == "__main__":
         type=int,
         default=50,
         metavar="N",
-        help="number of epochs to train (default: 10)",
+        help="number of epochs to train (default: 50)",
     )
 
     parser.add_argument(

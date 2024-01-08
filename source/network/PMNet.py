@@ -44,6 +44,7 @@ class _Bottleneck(nn.Module):
         mid_ch = out_ch // _BOTTLENECK_EXPANSION
         self.reduce = _ConvBnReLU(in_ch, mid_ch, 1, stride, 0, 1, True)
         self.conv3x3 = _ConvBnReLU(mid_ch, mid_ch, 3, 1, dilation, dilation, True)
+        #TODO: this step makes no sense. 1x1 convolution with no dimension reduction because mid_ch = out_ch
         self.increase = _ConvBnReLU(mid_ch, out_ch, 1, 1, 0, 1, False)
         self.shortcut = (
             _ConvBnReLU(in_ch, out_ch, 1, stride, 0, 1, False)
@@ -161,6 +162,7 @@ class PMNet(nn.Module):
         self.layer1 = _Stem(ch[0])
         self.layer2 = _ResLayer(n_blocks[0], ch[0], ch[2], s[0], d[0])
         self.layer3 = _ResLayer(n_blocks[1], ch[2], ch[3], s[1], d[1])
+        #TODO: 1x1 convolution in 
         self.layer4 = _ResLayer(n_blocks[2], ch[3], ch[3], s[2], d[2])
         self.layer5 = _ResLayer(n_blocks[3], ch[3], ch[4], s[3], d[3], multi_grids)
         self.aspp = _ASPP(ch[4], 256, atrous_rates)
@@ -170,7 +172,8 @@ class PMNet(nn.Module):
 
         # Decoder
         self.conv_up5 = ConRu(512, 512, 3, 1)
-        self.conv_up4 = ConRuT(512+512, 512, 3, 1)
+        # TODO: Add dynamic stride here to align with stride of encoder layers. Currently doesn't work with output_stride=8
+        self.conv_up4 = ConRuT(512+512, 512, 3, 1) 
         self.conv_up3 = ConRuT(512+512, 256, 3, 1)
         self.conv_up2 = ConRu(256+256, 256, 3, 1)
         self.conv_up1 = ConRu(256+256, 256, 3, 1)

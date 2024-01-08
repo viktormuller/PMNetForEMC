@@ -1,5 +1,5 @@
 scikit-image
 pandas
 matplotlib
-torch
+pytorch
 torchvision

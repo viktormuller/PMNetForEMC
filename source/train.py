@@ -66,7 +66,7 @@ def train(args):
     bnlayers = [args.bottleneck_layers] * 4
     
     network = PMNet(bnlayers, [1,1,1], None, 16).to(device)
-    optimizer = optim.Adam(network.parameters())
+    optimizer = optim.Adam(network.parameters(), lr=args.learning_rate)
     scheduler = optim.lr_scheduler.StepLR(optimizer=optimizer,step_size=10, gamma=0.5, verbose=True)
     loss_fn = ROI_RMSE_Loss()
     
@@ -81,13 +81,14 @@ def train(args):
             loss = loss_fn(output,target_with_roi)
             loss.backward()
             optimizer.step()
-            if (batch_idx + 1) % args.log_interval == 0:
+            idx = batch_idx +1
+            if (idx) % args.log_interval == 0:
                 print(
                     "Train Epoch: {} [{}/{} ({:.0f}%)] Loss: {:.6f}".format(
                         epoch,
-                        batch_idx * len(data),
+                        (idx) * len(data),
                         len(usc_training_dataloader.sampler),
-                        100.0 * batch_idx / len(usc_training_dataloader),
+                        100.0 * idx / len(usc_training_dataloader),
                         loss.item(),
                     )
                 )
@@ -113,6 +114,13 @@ if __name__ == "__main__":
         default=1,
         metavar="N",
         help="number of bottleneck layers per ResLayer (default: 1)",
+    )
+
+    parser.add_argument(
+        "--learning-rate",
+        type=float,
+        default=0.001,
+        help="sets the initial learning reate (default: 0.001)"
     )
 
     parser.add_argument(

@@ -48,9 +48,9 @@ def train(args):
     print("Number of gpus available - {}".format(args.num_gpus))
     kwargs = {"num_workers": 1, "pin_memory": True} if use_cuda else {}
     device = torch.device("cuda" if use_cuda else "cpu")
-
-    with zipfile.ZipFile(args.data_dir + "/" + args.data_file, 'r') as zip_ref:
-        zip_ref.extractall(args.data_dir)
+    if (not args.data_ready):
+        with zipfile.ZipFile(args.data_dir + "/" + args.data_file, 'r') as zip_ref:
+            zip_ref.extractall(args.data_dir)
     USC_suffix = '/data/USC'
     data_dir = args.data_dir + USC_suffix
     usc_training_dataloader = getTrainingData(
@@ -112,6 +112,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Data and model checkpoints directories
+
+    parser.add_argument(
+        "--data-ready",
+        type=bool,
+        default=False,
+        help="If set to True it skips unzipping the data, assumes it is ready in data/USC (default: False)"
+    )
     
     parser.add_argument(
         "--bottleneck-layers",

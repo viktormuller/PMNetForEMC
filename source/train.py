@@ -41,7 +41,6 @@ def test(model, test_loader, device):
     )
 
 import zipfile
-import itertools
 
 def train(args):
     use_cuda = args.num_gpus > 0
@@ -94,9 +93,6 @@ def train(args):
                     ),
                     flush=True
                 )
-                for name, param in itertools.islice(network.named_parameters(), 10):
-                    if param.requires_grad:
-                        print(name, param.data)
         test(network, usc_test_dataloader, device)
         scheduler.step()
     save_model(network, args.model_dir)

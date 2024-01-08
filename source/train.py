@@ -93,6 +93,9 @@ def train(args):
                     ),
                     flush=True
                 )
+                for name, param in network.named_parameters()[:10]:
+                    if param.requires_grad:
+                        print(name, param.data)
         test(network, usc_test_dataloader, device)
         scheduler.step()
     save_model(network, args.model_dir)

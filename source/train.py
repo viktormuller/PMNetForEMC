@@ -68,17 +68,19 @@ def train(args):
     network = PMNet(bnlayers, [1,1,1], None, 16).to(device)
     optimizer = optim.Adam(network.parameters(), lr=args.learning_rate)
     scheduler = optim.lr_scheduler.StepLR(optimizer=optimizer,step_size=10, gamma=0.5, verbose=True)
-    loss_fn = ROI_RMSE_Loss()
-    
+    #loss_fn = ROI_RMSE_Loss()
+    loss_fn = torch.nn.MSELoss()
+
     for epoch in range(1,args.epochs):        
         network.train()
         for batch_idx, (data, target) in enumerate(usc_training_dataloader):
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
             output = network(data)    
-            roi = data[:, 0, :, :].unsqueeze(1)
-            target_with_roi = torch.cat((target, roi), dim=1)
-            loss = loss_fn(output,target_with_roi)
+            #roi = data[:, 0, :, :].unsqueeze(1)
+            #target_with_roi = torch.cat((target, roi), dim=1)
+            #loss = loss_fn(output,target_with_roi)
+            loss = loss_fn(output, target)
             loss.backward()
             optimizer.step()
             idx = batch_idx +1

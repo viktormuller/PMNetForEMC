@@ -63,7 +63,9 @@ def train(args):
         batch_size=args.test_batch_size, 
         **kwargs)
     
-    network = PMNet([3,3,3,3], [1,1,1], None, 16).to(device)
+    bnlayers = [args.bottleneck_layers] * 4
+    
+    network = PMNet(bnlayers, [1,1,1], None, 16).to(device)
     optimizer = optim.Adam(network.parameters())
     scheduler = optim.lr_scheduler.StepLR(optimizer=optimizer,step_size=10, gamma=0.5, verbose=True)
     loss_fn = ROI_RMSE_Loss()
@@ -79,7 +81,7 @@ def train(args):
             loss = loss_fn(output,target_with_roi)
             loss.backward()
             optimizer.step()
-            if batch_idx % args.log_interval == 0:
+            if (batch_idx + 1) % args.log_interval == 0:
                 print(
                     "Train Epoch: {} [{}/{} ({:.0f}%)] Loss: {:.6f}".format(
                         epoch,
@@ -104,6 +106,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Data and model checkpoints directories
+    
+    parser.add_argument(
+        "--bottleneck-layers",
+        type=int,
+        default=1,
+        metavar="N",
+        help="number of bottleneck layers per ResLayer (default: 1)",
+    )
+
     parser.add_argument(
         "--batch-size",
         type=int,

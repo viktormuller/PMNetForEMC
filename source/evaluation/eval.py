@@ -48,7 +48,7 @@ def roi_rmse_loss(output,target):
   build_count = 0
   input = target[:,1,:,:].unsqueeze(1)
   #print("Input dimension ",input.shape)
-  error_tensor = torch.where(input==0,(output-target)**2,0)
+  error_tensor = torch.where(input==0,(output-target[:,0,:,:].unsqueeze(1))**2,0)
   sum_torch = error_tensor.sum()
   #print("Sum torch ",sum_torch)
   count_non_zero = error_tensor.count_nonzero()

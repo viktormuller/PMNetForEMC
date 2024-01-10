@@ -2,3 +2,5 @@ data/**
 **/*checkpoint.ipynb
 **/__pycache__/*.*
 **/*.zip
+**/*.pt
+**/*.pth

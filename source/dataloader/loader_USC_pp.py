@@ -28,15 +28,21 @@ class PMNet_USC_per_pixel(Dataset):
         img_name_buildings = os.path.join(self.dir_buildings, str((self.ind_val.iloc[idx, 0]))) + ".png"
         image_buildings = np.asarray(io.imread(img_name_buildings))
         
-        positions = torch.tensor(self.ind_val.iloc[idx,1:3].values, dtype=torch.float32)
-        powers = torch.tensor(self.ind_val.iloc[idx,3], dtype=torch.float32)
-      
-        inputs = (positions, image_buildings)
-
+        #Load Tx (transmitter):
+        self.dir_Tx = self.dir_dataset+ "/Tx/" 
+        img_name_Tx = os.path.join(self.dir_Tx, str((self.ind_val.iloc[idx, 0]))) + ".png"
+        image_Tx = np.asarray(io.imread(img_name_Tx))
+        
+        image_buildings_Tx=np.stack([image_buildings, image_Tx], axis=2)
+        
         if self.transform:            
-            image_buidlings = self.transform(image_buildings).type(torch.float32)            
+            image_buidlings = self.transform(image_buildings_Tx).type(torch.float32)            
 
-        inputs = (positions, image_buildings)
+        positions = torch.tensor(self.ind_val.iloc[idx,1:3].values, dtype=torch.float32)        
+
+        inputs = (positions, image_buildings_Tx)
+
+        powers = torch.tensor(self.ind_val.iloc[idx,3], dtype=torch.float32)
             
         return [inputs , powers]
     
